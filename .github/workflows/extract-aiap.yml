@@ -1,0 +1,37 @@
+name: Extract AIAP project
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    if: ${{ github.event.head_commit.message != 'Extract AIAP project into repository' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Extract project archive
+        shell: bash
+        run: |
+          set -e
+          ARCHIVE="AIAP-platform-v8.5.19-online.zip"
+          test -f "$ARCHIVE"
+          cp "$ARCHIVE" /tmp/aiap.zip
+          cp .github/workflows/extract-aiap.yml /tmp/extract-aiap.yml
+          git rm -r --ignore-unmatch .
+          unzip -q /tmp/aiap.zip -d .
+          mkdir -p .github/workflows
+          cp /tmp/extract-aiap.yml .github/workflows/extract-aiap.yml
+          rm -f AIAP-platform-v8.5.19-online.zip
+          git add -A
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Extract AIAP project into repository"
+          git push origin HEAD:main
