@@ -1,6 +1,6 @@
 -- Initial AIAP database schema.
 
-CREATE TYPE "Role" AS ENUM ('MEMBER','PRESIDENT','SECRETARIAT','TREASURER','COMMUNICATION','SUPER_ADMIN');
+CREATE TYPE "Role" AS ENUM ('MEMBER','PRESIDENT','SECRETARIAT','TREASURER','COMMUNICATION','SUPER_ADMIN','EVENT_ORGANIZER','VICE_PRESIDENT','COORDINATOR');
 CREATE TYPE "MembershipStatus" AS ENUM ('PENDING','ACTIVE','SUSPENDED','INACTIVE','REJECTED');
 CREATE TYPE "RegistrationStatus" AS ENUM ('DRAFT','PENDING','APPROVED','REJECTED');
 CREATE TYPE "EventStatus" AS ENUM ('DRAFT','PUBLISHED','CANCELLED','COMPLETED');
@@ -83,7 +83,9 @@ CREATE TABLE "ActivityImage" (
   "id" TEXT NOT NULL,
   "activityId" TEXT NOT NULL,
   "url" TEXT NOT NULL,
+  "mediaType" TEXT NOT NULL DEFAULT 'IMAGE',
   "altText" TEXT,
+  "caption" TEXT,
   "sortOrder" INTEGER NOT NULL DEFAULT 0,
   CONSTRAINT "ActivityImage_pkey" PRIMARY KEY ("id"),
   CONSTRAINT "ActivityImage_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "Activity"("id") ON DELETE CASCADE ON UPDATE CASCADE
@@ -114,6 +116,61 @@ CREATE TABLE "EventRegistration" (
   CONSTRAINT "EventRegistration_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE UNIQUE INDEX "EventRegistration_eventId_memberId_key" ON "EventRegistration"("eventId","memberId");
+
+CREATE TABLE "EventPlan" (
+  "id" TEXT NOT NULL,
+  "eventId" TEXT NOT NULL,
+  "objective" TEXT,
+  "expectedAttendance" INTEGER,
+  "audience" TEXT,
+  "budget" DECIMAL(12,2) NOT NULL DEFAULT 0,
+  "venueDetails" TEXT,
+  "transportPlan" TEXT,
+  "accommodationPlan" TEXT,
+  "cateringPlan" TEXT,
+  "securityPlan" TEXT,
+  "communicationsPlan" TEXT,
+  "contingencyPlan" TEXT,
+  "program" TEXT,
+  "notes" TEXT,
+  "createdBy" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "EventPlan_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "EventPlan_eventId_key" UNIQUE ("eventId"),
+  CONSTRAINT "EventPlan_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "Event"("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE INDEX "EventPlan_eventId_idx" ON "EventPlan"("eventId");
+
+CREATE TABLE "EventPlanTask" (
+  "id" TEXT NOT NULL,
+  "planId" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "description" TEXT,
+  "assignee" TEXT,
+  "dueAt" TIMESTAMP(3),
+  "priority" TEXT NOT NULL DEFAULT 'MEDIUM',
+  "status" TEXT NOT NULL DEFAULT 'TODO',
+  "sortOrder" INTEGER NOT NULL DEFAULT 0,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "EventPlanTask_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "EventPlanTask_planId_fkey" FOREIGN KEY ("planId") REFERENCES "EventPlan"("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE INDEX "EventPlanTask_planId_idx" ON "EventPlanTask"("planId");
+
+CREATE TABLE "ActivityParticipation" (
+  "id" TEXT NOT NULL,
+  "activityId" TEXT NOT NULL,
+  "memberId" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "ActivityParticipation_pkey" PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "ActivityParticipation_activityId_memberId_key" ON "ActivityParticipation"("activityId","memberId");
+CREATE INDEX "ActivityParticipation_activityId_idx" ON "ActivityParticipation"("activityId");
+CREATE INDEX "ActivityParticipation_memberId_idx" ON "ActivityParticipation"("memberId");
+ALTER TABLE "ActivityParticipation" ADD CONSTRAINT "ActivityParticipation_activityId_fkey" FOREIGN KEY ("activityId") REFERENCES "Activity"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ActivityParticipation" ADD CONSTRAINT "ActivityParticipation_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 CREATE TABLE "Announcement" (
   "id" TEXT NOT NULL,
