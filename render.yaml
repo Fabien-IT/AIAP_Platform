@@ -10,9 +10,12 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
-        sync: false
+        generateValue: true
       - key: CLIENT_ORIGIN
-        sync: false
+        fromService:
+          name: aiap-web
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
       - key: NODE_ENV
         value: production
 
@@ -28,4 +31,7 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        sync: false
+        fromService:
+          name: aiap-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
