@@ -40,7 +40,6 @@ CREATE TABLE "Member" (
   "membershipStatus" "MembershipStatus" NOT NULL DEFAULT 'PENDING',
   "publicProfile" BOOLEAN NOT NULL DEFAULT false,
   "approvedAt" TIMESTAMP(3),
-  "publicProfile" BOOLEAN NOT NULL DEFAULT false,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL,
   CONSTRAINT "Member_pkey" PRIMARY KEY ("id")
