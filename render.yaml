@@ -2,21 +2,18 @@ services:
   - type: web
     name: aiap-api
     runtime: node
-    plan: free
     rootDir: server
-    buildCommand: npm install --omit=dev && npx prisma generate && npx prisma migrate deploy && npm run build
+    buildCommand: npm install && npm run prisma:generate && npm run prisma:migrate && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
+    plan: free
     envVars:
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
-        generateValue: true
+        sync: false
       - key: CLIENT_ORIGIN
-        fromService:
-          name: aiap-web
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
+        sync: false
       - key: NODE_ENV
         value: production
 
@@ -32,7 +29,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        fromService:
-          name: aiap-api
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
+        sync: false
