@@ -1,2 +1,1 @@
-ALTER TYPE "Role" ADD VALUE IF NOT EXISTS 'VICE_PRESIDENT';
-ALTER TYPE "Role" ADD VALUE IF NOT EXISTS 'COORDINATOR';
+-- Association roles are included in the reconstructed initial schema.
