@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: aiap
+      POSTGRES_USER: aiap
+      POSTGRES_PASSWORD: change-this-local-password
+    ports:
+      - "5432:5432"
+    volumes:
+      - aiap_pgdata:/var/lib/postgresql/data
+
+volumes:
+  aiap_pgdata:

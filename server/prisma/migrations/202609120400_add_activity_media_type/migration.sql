@@ -1,0 +1,1 @@
+ALTER TABLE "ActivityImage" ADD COLUMN "mediaType" TEXT NOT NULL DEFAULT 'IMAGE';

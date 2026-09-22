@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+.vscode/
+
+AIAP_BUILD_VERSION=3
+
+server/uploads/
