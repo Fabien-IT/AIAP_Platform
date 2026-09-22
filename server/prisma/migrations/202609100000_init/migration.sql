@@ -1,7 +1,6 @@
 -- Initial AIAP database schema.
--- This migration creates the complete base schema required by the current Prisma schema.
 
-CREATE TYPE "Role" AS ENUM ('MEMBER','PRESIDENT','SECRETARIAT','TREASURER','COMMUNICATION','SUPER_ADMIN','EVENT_ORGANIZER','VICE_PRESIDENT','COORDINATOR');
+CREATE TYPE "Role" AS ENUM ('MEMBER','PRESIDENT','SECRETARIAT','TREASURER','COMMUNICATION','SUPER_ADMIN');
 CREATE TYPE "MembershipStatus" AS ENUM ('PENDING','ACTIVE','SUSPENDED','INACTIVE','REJECTED');
 CREATE TYPE "RegistrationStatus" AS ENUM ('DRAFT','PENDING','APPROVED','REJECTED');
 CREATE TYPE "EventStatus" AS ENUM ('DRAFT','PUBLISHED','CANCELLED','COMPLETED');
@@ -41,6 +40,7 @@ CREATE TABLE "Member" (
   "membershipStatus" "MembershipStatus" NOT NULL DEFAULT 'PENDING',
   "publicProfile" BOOLEAN NOT NULL DEFAULT false,
   "approvedAt" TIMESTAMP(3),
+  "publicProfile" BOOLEAN NOT NULL DEFAULT false,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL,
   CONSTRAINT "Member_pkey" PRIMARY KEY ("id")
@@ -148,6 +148,7 @@ CREATE TABLE "Transaction" (
   "amount" DECIMAL(12,2) NOT NULL,
   "category" TEXT NOT NULL,
   "description" TEXT NOT NULL,
+  "reference" TEXT,
   "receiptUrl" TEXT,
   "occurredAt" TIMESTAMP(3) NOT NULL,
   "createdBy" TEXT NOT NULL,
@@ -182,4 +183,3 @@ CREATE TABLE "AuditLog" (
 ALTER TABLE "Member"
   ADD CONSTRAINT "Member_userId_fkey"
   FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-CREATE INDEX "Member_userId_idx" ON "Member"("userId");
