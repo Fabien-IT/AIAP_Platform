@@ -2,6 +2,7 @@ services:
   - type: web
     name: aiap-api
     runtime: node
+    plan: free
     rootDir: server
     buildCommand: npm install --omit=dev && npx prisma generate && npx prisma migrate deploy && npm run build
     startCommand: npm start
