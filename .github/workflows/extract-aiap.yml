@@ -21,18 +21,32 @@ jobs:
       - name: Extract project archive
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           ARCHIVE="AIAP-platform-v8.5.19-online.zip"
           test -f "$ARCHIVE"
-          cp "$ARCHIVE" /tmp/aiap.zip
+
+          mkdir -p /tmp/aiap-project
+          unzip -q "$ARCHIVE" -d /tmp/aiap-project
+
           cp .github/workflows/extract-aiap.yml /tmp/extract-aiap.yml
-          git rm -r --ignore-unmatch .
-          unzip -q /tmp/aiap.zip -d .
+
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+
+          cp -a /tmp/aiap-project/. ./
+
           mkdir -p .github/workflows
           cp /tmp/extract-aiap.yml .github/workflows/extract-aiap.yml
+
           rm -f AIAP-platform-v8.5.19-online.zip
+
           git add -A
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git.config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --cached --quiet; then
+            echo "No repository changes detected."
+            exit 0
+          fi
+
           git commit -m "Extract AIAP project into repository"
           git push origin HEAD:main
