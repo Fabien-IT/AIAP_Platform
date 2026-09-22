@@ -28,14 +28,58 @@ jobs:
           mkdir -p /tmp/aiap-project
           unzip -q "$ARCHIVE" -d /tmp/aiap-project
 
-          cp .github/workflows/extract-aiap.yml /tmp/extract-aiap.yml
-
+          # Replace the repository contents while keeping the workflow available.
           find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-
           cp -a /tmp/aiap-project/. ./
 
+          # Recreate this workflow after the archive extraction.
           mkdir -p .github/workflows
-          cp /tmp/extract-aiap.yml .github/workflows/extract-aiap.yml
+          cat > .github/workflows/extract-aiap.yml <<'WORKFLOW'
+          name: Extract AIAP project
+
+          on:
+            push:
+              branches: [main]
+            workflow_dispatch:
+
+          permissions:
+            contents: write
+
+          jobs:
+            extract:
+              if: ${{ github.event_name == 'workflow_dispatch' || github.event.head_commit.message != 'Extract AIAP project into repository' }}
+              runs-on: ubuntu-latest
+              steps:
+                - name: Checkout
+                  uses: actions/checkout@v4
+                  with:
+                    fetch-depth: 1
+
+                - name: Extract project archive
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    ARCHIVE="AIAP-platform-v8.5.19-online.zip"
+                    test -f "$ARCHIVE"
+                    mkdir -p /tmp/aiap-project
+                    unzip -q "$ARCHIVE" -d /tmp/aiap-project
+                    find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+                    cp -a /tmp/aiap-project/. ./
+                    mkdir -p .github/workflows
+                    cat > .github/workflows/extract-aiap.yml <<'WORKFLOW'
+                    $WORKFLOW_PLACEHOLDER
+                    WORKFLOW
+                    rm -f AIAP-platform-v8.5.19-online.zip
+                    git add -A
+                    git config user.name "github-actions[bot]"
+                    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                    if git diff --cached --quiet; then
+                      echo "No repository changes detected."
+                      exit 0
+                    fi
+                    git commit -m "Extract AIAP project into repository"
+                    git push origin HEAD:main
+          WORKFLOW
 
           rm -f AIAP-platform-v8.5.19-online.zip
 
