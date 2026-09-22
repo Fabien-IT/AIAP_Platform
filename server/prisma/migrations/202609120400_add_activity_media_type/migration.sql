@@ -1,1 +1,1 @@
-ALTER TABLE "ActivityImage" ADD COLUMN "mediaType" TEXT NOT NULL DEFAULT 'IMAGE';
+-- ActivityImage.mediaType is included in the reconstructed initial schema.
