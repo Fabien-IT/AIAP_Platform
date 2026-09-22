@@ -1,7 +1,7 @@
 -- Initial AIAP database schema.
 -- This migration creates the complete base schema required by the current Prisma schema.
 
-CREATE TYPE "Role" AS ENUM ('MEMBER','PRESIDENT','SECRETARIAT','TREASURER','COMMUNICATION','SUPER_ADMIN');
+CREATE TYPE "Role" AS ENUM ('MEMBER','PRESIDENT','SECRETARIAT','TREASURER','COMMUNICATION','SUPER_ADMIN','EVENT_ORGANIZER','VICE_PRESIDENT','COORDINATOR');
 CREATE TYPE "MembershipStatus" AS ENUM ('PENDING','ACTIVE','SUSPENDED','INACTIVE','REJECTED');
 CREATE TYPE "RegistrationStatus" AS ENUM ('DRAFT','PENDING','APPROVED','REJECTED');
 CREATE TYPE "EventStatus" AS ENUM ('DRAFT','PUBLISHED','CANCELLED','COMPLETED');
@@ -15,6 +15,7 @@ CREATE TABLE "User" (
   "active" BOOLEAN NOT NULL DEFAULT true,
   "emailVerifiedAt" TIMESTAMP(3),
   "lastLoginAt" TIMESTAMP(3),
+  "mustChangePassword" BOOLEAN NOT NULL DEFAULT false,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" TIMESTAMP(3) NOT NULL,
   CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -182,5 +183,3 @@ ALTER TABLE "Member"
   ADD CONSTRAINT "Member_userId_fkey"
   FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 CREATE INDEX "Member_userId_idx" ON "Member"("userId");
-
-ALTER TABLE "Transaction" ADD COLUMN IF NOT EXISTS "reference" TEXT;
