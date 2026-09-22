@@ -1,7 +1,7 @@
 {
   "name": "aiap-server",
   "private": true,
-  "version": "8.5.18",
+  "version": "8.5.19",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
