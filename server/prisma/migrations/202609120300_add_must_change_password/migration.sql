@@ -1,1 +1,1 @@
-ALTER TABLE "User" ADD COLUMN "mustChangePassword" BOOLEAN NOT NULL DEFAULT false;
+-- mustChangePassword is included in the reconstructed initial schema.
