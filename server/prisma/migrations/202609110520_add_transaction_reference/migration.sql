@@ -1,3 +1,3 @@
--- Add a nullable reference field used to link ledger transactions to contributions.
-ALTER TABLE "Transaction" ADD COLUMN IF NOT EXISTS "reference" TEXT;
-CREATE INDEX IF NOT EXISTS "Transaction_reference_idx" ON "Transaction"("reference");
+-- The base schema already contains the nullable Transaction.reference column and its index.
+-- This migration is intentionally a no-op so the historical migration remains
+-- compatible with the reconstructed initial schema.
